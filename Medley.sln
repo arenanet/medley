@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Medley.Collections", "Medle
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Medley.Collections.Tests", "Medley.Collections.Tests\Medley.Collections.Tests.csproj", "{F9D48344-A375-4FE0-AA47-A44B417A3B87}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Medley.Concurrent", "Medley.Concurrent\Medley.Concurrent.csproj", "{2D8B1864-B384-4D62-BAC6-FA1C4BE66A86}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Medley.Concurrent.Tests", "Medley.Concurrent.Tests\Medley.Concurrent.Tests.csproj", "{2D6D6267-1CDD-4E68-AFFF-33878890C7D1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{F9D48344-A375-4FE0-AA47-A44B417A3B87}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9D48344-A375-4FE0-AA47-A44B417A3B87}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F9D48344-A375-4FE0-AA47-A44B417A3B87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D8B1864-B384-4D62-BAC6-FA1C4BE66A86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D8B1864-B384-4D62-BAC6-FA1C4BE66A86}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D8B1864-B384-4D62-BAC6-FA1C4BE66A86}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D8B1864-B384-4D62-BAC6-FA1C4BE66A86}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D6D6267-1CDD-4E68-AFFF-33878890C7D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D6D6267-1CDD-4E68-AFFF-33878890C7D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D6D6267-1CDD-4E68-AFFF-33878890C7D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D6D6267-1CDD-4E68-AFFF-33878890C7D1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

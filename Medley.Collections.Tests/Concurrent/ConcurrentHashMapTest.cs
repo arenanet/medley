@@ -17,7 +17,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace ArenaNet.Medley.Collections
+namespace ArenaNet.Medley.Collections.Concurrent
 {
     [TestClass]
     public class ConcurrentHashMapTest

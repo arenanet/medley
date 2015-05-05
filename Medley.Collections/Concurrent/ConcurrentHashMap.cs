@@ -15,7 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace ArenaNet.Medley.Collections
+namespace ArenaNet.Medley.Collections.Concurrent
 {
     /// <summary>
     /// A concurrent hashmap. It uses striping to lock buckets.
