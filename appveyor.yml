@@ -1,0 +1,13 @@
+version: 1.0.{build}
+configuration: Release
+platform: Any CPU
+build:
+  project: Medley.sln
+  verbosity: minimal
+nuget:
+  account_feed: true
+  project_feed: true
+after_build:
+- ps: '7z a Medley.zip C:\projects\medley\Medley.Collections\bin\Release\Medley.Collections.dll'
+artifacts:
+- path: 'Medley.zip'
