@@ -52,7 +52,6 @@
   <ItemGroup>
     <Compile Include="ConcurrentHashMapTest.cs" />
     <Compile Include="IterableLinkedListTest.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Medley.Collections\Medley.Collections.csproj">
