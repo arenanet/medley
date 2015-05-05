@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Medley.Concurrent", "Medley
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Medley.Concurrent.Tests", "Medley.Concurrent.Tests\Medley.Concurrent.Tests.csproj", "{2D6D6267-1CDD-4E68-AFFF-33878890C7D1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Medley.Pool", "Medley.Pool\Medley.Pool.csproj", "{B769ECA0-7373-4A2F-9A3F-8BD5756D523D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Medley.Pool.Tests", "Medley.Pool.Tests\Medley.Pool.Tests.csproj", "{0788D4FB-5036-4F53-8FAC-56A26F0558EE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,14 @@ Global
 		{2D6D6267-1CDD-4E68-AFFF-33878890C7D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2D6D6267-1CDD-4E68-AFFF-33878890C7D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2D6D6267-1CDD-4E68-AFFF-33878890C7D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B769ECA0-7373-4A2F-9A3F-8BD5756D523D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B769ECA0-7373-4A2F-9A3F-8BD5756D523D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B769ECA0-7373-4A2F-9A3F-8BD5756D523D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B769ECA0-7373-4A2F-9A3F-8BD5756D523D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0788D4FB-5036-4F53-8FAC-56A26F0558EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0788D4FB-5036-4F53-8FAC-56A26F0558EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0788D4FB-5036-4F53-8FAC-56A26F0558EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0788D4FB-5036-4F53-8FAC-56A26F0558EE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
