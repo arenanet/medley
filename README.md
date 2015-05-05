@@ -13,6 +13,8 @@ Getting Started
 
 Medley contains several libraries which have a multitude of reusable components. Related components have been grouped with their perspective libraries.
 
+[Medley.Collections](https://github.com/arenanet/medley/tree/master/Medley.Collections) - Various reusable collections and containers.
+
 ## Bugs and Feedback
 
 For bugs, questions and discussions please use the [GitHub Issues](https://github.com/ArenaNet/Medley/issues).
