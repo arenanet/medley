@@ -8,6 +8,6 @@ nuget:
   account_feed: true
   project_feed: true
 after_build:
-- ps: '7z a Medley.zip C:\projects\medley\Medley.Collections\bin\Release\Medley.Collections.dll'
+- ps: '7z a Binaries.zip C:\projects\medley\Medley.Collections\bin\Release\Medley.Collections.dll'
 artifacts:
-- path: 'Medley.zip'
+- path: 'Binaries.zip'
