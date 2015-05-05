@@ -14,6 +14,10 @@ Getting Started
 Medley contains several libraries which have a multitude of reusable components. Related components have been grouped with their perspective libraries.
 
 [Medley.Collections](https://github.com/arenanet/medley/tree/master/Medley.Collections) - Various reusable collections and containers.
+<br />
+[Medley.Concurrent](https://github.com/arenanet/medley/tree/master/Medley.Concurrent) - Various reusable concurrency constructs.
+<br />
+[Medley.Pool](https://github.com/arenanet/medley/tree/master/Medley.Pool) - Generic pool implementation.
 
 ## Bugs and Feedback
 
