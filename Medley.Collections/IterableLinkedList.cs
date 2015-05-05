@@ -23,17 +23,17 @@ namespace ArenaNet.Medley.Collections
     /// <typeparam name="T"></typeparam>
     public class IterableLinkedList<T> : IEnumerable<T>, IEnumerable
     {
-        internal IterableLinkedListNode<T> root = (IterableLinkedListNode<T>)null;
-        internal IterableLinkedListNode<T> tail = (IterableLinkedListNode<T>)null;
+        internal IterableLinkedListNode<T> root = null;
+        internal IterableLinkedListNode<T> tail = null;
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return (IEnumerator)new IterableLinkedListEnumerator<T>(this);
+            return new IterableLinkedListEnumerator<T>(this);
         }
 
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
         {
-            return (IEnumerator<T>)new IterableLinkedListEnumerator<T>(this);
+            return new IterableLinkedListEnumerator<T>(this);
         }
 
         /// <summary>
@@ -219,7 +219,7 @@ namespace ArenaNet.Medley.Collections
         /// <returns></returns>
         private IterableLinkedListNodeLink<T> FindNode(T value)
         {
-            IterableLinkedListNode<T> parent = (IterableLinkedListNode<T>)null;
+            IterableLinkedListNode<T> parent = null;
 
             for (IterableLinkedListNode<T> child = this.root; child != null; child = child.Next)
             {
@@ -275,8 +275,8 @@ namespace ArenaNet.Medley.Collections
     /// <typeparam name="T"></typeparam>
     internal class IterableLinkedListEnumerator<T> : IEnumerator<T>, IEnumerator, IDisposable
     {
-        private IterableLinkedListNode<T> currentNode = (IterableLinkedListNode<T>)null;
-        private IterableLinkedList<T> sourceList = (IterableLinkedList<T>)null;
+        private IterableLinkedListNode<T> currentNode = null;
+        private IterableLinkedList<T> sourceList = null;
 
         T IEnumerator<T>.Current
         {
