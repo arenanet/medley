@@ -88,6 +88,11 @@ namespace ArenaNet.Medley.Pool
         internal bool Pooled { set; get; }
 
         /// <summary>
+        /// True if this object is disposed and unusable.
+        /// </summary>
+        private bool isDisposed = false;
+
+        /// <summary>
         /// Creates a new PooledObject with the given pool and value.
         /// </summary>
         /// <param name="pool"></param>
@@ -125,10 +130,14 @@ namespace ArenaNet.Medley.Pool
         /// </summary>
         public void Dispose()
         {
-            if (Pool != null)
+            lock (this)
             {
-                Pool.totalPoolSize--;
-                Pool = null;
+                if (!isDisposed)
+                {
+                    isDisposed = true;
+
+                    Pool.OnDisposed(this);
+                }
             }
         }
     }

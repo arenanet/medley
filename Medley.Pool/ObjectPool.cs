@@ -150,5 +150,19 @@ namespace ArenaNet.Medley.Pool
                 }
             }
         }
+
+        /// <summary>
+        /// Handles pooled object disposal.
+        /// </summary>
+        /// <param name="pooledObject"></param>
+        internal void OnDisposed(PooledObject<T> pooledObject)
+        {
+            lock (pool)
+            {
+                totalPoolSize--;
+
+                pooledObject.Pool = null;
+            }
+        }
     }
 }
