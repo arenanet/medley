@@ -74,6 +74,7 @@
   <ItemGroup>
     <Compile Include="Concurrent\ConcurrentHashMap.cs" />
     <Compile Include="Concurrent\ConcurrentHashSet.cs" />
+    <Compile Include="Concurrent\ConcurrentLinkedQueue.cs" />
     <Compile Include="IterableLinkedList.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
