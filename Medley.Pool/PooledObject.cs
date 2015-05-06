@@ -76,21 +76,36 @@ namespace ArenaNet.Medley.Pool
                 }
             }
         }
+
         public RefCountValue RefCount
         {
             get;
             internal set;
         }
 
+        internal enum PooledObjectState : int
+        {
+            NONE,
+            POOLED,
+            USED,
+            DISPOSED
+        }
+
         /// <summary>
         /// This value is owned by the Pool - not this object
         /// </summary>
-        internal bool Pooled { set; get; }
-
-        /// <summary>
-        /// True if this object is disposed and unusable.
-        /// </summary>
-        private bool isDisposed = false;
+        internal int _state = (int)PooledObjectState.NONE;
+        internal PooledObjectState State 
+        {
+            set
+            {
+                _state = (int)value;
+            }
+            get
+            {
+                return (PooledObjectState)_state;
+            }
+        }
 
         /// <summary>
         /// Creates a new PooledObject with the given pool and value.
@@ -130,13 +145,20 @@ namespace ArenaNet.Medley.Pool
         /// </summary>
         public void Dispose()
         {
-            lock (this)
+            while (true)
             {
-                if (!isDisposed)
-                {
-                    isDisposed = true;
+                int currentState = _state;
 
-                    Pool.OnDisposed(this);
+                if (currentState != (int)PooledObjectState.DISPOSED)
+                {
+                    if (Interlocked.CompareExchange(ref _state, (int)PooledObjectState.DISPOSED, currentState) == currentState)
+                    {
+                        Pool.OnDisposed(this);
+                    }
+                }
+                else
+                {
+                    break;
                 }
             }
         }

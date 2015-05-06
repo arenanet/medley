@@ -43,6 +43,12 @@
   <ItemGroup>
     <None Include="Medley.Pool.licenseheader" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Medley.Collections\Medley.Collections.csproj">
+      <Project>{449287f6-a12b-4a77-8410-8c59848d07a5}</Project>
+      <Name>Medley.Collections</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

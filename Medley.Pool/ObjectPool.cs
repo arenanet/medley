@@ -13,7 +13,7 @@
  */
 using System;
 using System.Threading;
-using System.Collections.Generic;
+using ArenaNet.Medley.Collections.Concurrent;
 
 namespace ArenaNet.Medley.Pool
 {
@@ -42,7 +42,7 @@ namespace ArenaNet.Medley.Pool
         private readonly int trimPercentile;
         private readonly int minimumPoolSize;
 
-        private Queue<PooledObject<T>> pool = new Queue<PooledObject<T>>();
+        private ConcurrentLinkedQueue<PooledObject<T>> pool = new ConcurrentLinkedQueue<PooledObject<T>>();
         internal int availableObjects = 0;
         internal int totalPoolSize = 0;
 
@@ -74,28 +74,24 @@ namespace ArenaNet.Medley.Pool
         {
             PooledObject<T> pooledObject = null;
 
-            lock (pool)
+            if (pool.Dequeue(out pooledObject))
             {
-                if (availableObjects == 0)
+                Interlocked.Decrement(ref availableObjects);
+
+                if (onUpdateObject != null)
                 {
-                    pooledObject = new PooledObject<T>(this, onNewObject());
-
-                    totalPoolSize++;
+                    pooledObject.Value = onUpdateObject(pooledObject.Value);
                 }
-                else
-                {
-                    pooledObject = pool.Dequeue();
-                    availableObjects--;
-
-                    if (onUpdateObject != null)
-                    {
-                        pooledObject.Value = onUpdateObject(pooledObject.Value);
-                    }
-                }
-
-                pooledObject.Pooled = false;
-                pooledObject.RefCount.Value = 0;
             }
+            else
+            {
+                pooledObject = new PooledObject<T>(this, onNewObject());
+
+                Interlocked.Increment(ref totalPoolSize);
+            }
+
+            pooledObject.State = PooledObject<T>.PooledObjectState.USED;
+            pooledObject.RefCount.Value = 0;
 
             return pooledObject;
         }
@@ -111,7 +107,7 @@ namespace ArenaNet.Medley.Pool
                 throw new ArgumentNullException("PooledObject cannot be null.");
             }
 
-            if (pooledObject.Pooled)
+            if (pooledObject.State != PooledObject<T>.PooledObjectState.USED)
             {
                 throw new ArgumentException("PooledObject is already pooled.");
             }
@@ -121,11 +117,11 @@ namespace ArenaNet.Medley.Pool
                 throw new ArgumentException("PooledObject does not belong to this pool.");
             }
 
-            if (!pooledObject.Pooled)
+            while (true)
             {
-                lock (pool)
+                if (pooledObject._state == (int)PooledObject<T>.PooledObjectState.USED)
                 {
-                    if (!pooledObject.Pooled)
+                    if (Interlocked.CompareExchange(ref pooledObject._state, (int)PooledObject<T>.PooledObjectState.NONE, (int)PooledObject<T>.PooledObjectState.USED) == (int)PooledObject<T>.PooledObjectState.USED)
                     {
                         int currentPercentile = (int)(((float)(availableObjects + 1) / (float)totalPoolSize) * 100f);
 
@@ -137,16 +133,19 @@ namespace ArenaNet.Medley.Pool
                         if (currentPercentile > trimPercentile || totalPoolSize <= minimumPoolSize)
                         {
                             pool.Enqueue(pooledObject);
-                            pooledObject.Pooled = true;
+                            pooledObject.State = PooledObject<T>.PooledObjectState.POOLED;
 
-                            availableObjects++;
+                            Interlocked.Increment(ref availableObjects);
                         }
                         else
                         {
                             pooledObject.Dispose();
-                            pooledObject.Pooled = false;
                         }
                     }
+                }
+                else
+                {
+                    break;
                 }
             }
         }
@@ -157,12 +156,9 @@ namespace ArenaNet.Medley.Pool
         /// <param name="pooledObject"></param>
         internal void OnDisposed(PooledObject<T> pooledObject)
         {
-            lock (pool)
-            {
-                totalPoolSize--;
+            Interlocked.Decrement(ref totalPoolSize);
 
-                pooledObject.Pool = null;
-            }
+            pooledObject.Pool = null;
         }
     }
 }
