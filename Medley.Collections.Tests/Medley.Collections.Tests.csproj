@@ -51,6 +51,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Concurrent\ConcurrentHashMapTest.cs" />
+    <Compile Include="Concurrent\ConcurrentHashSetTest.cs" />
     <Compile Include="IterableLinkedListTest.cs" />
   </ItemGroup>
   <ItemGroup>

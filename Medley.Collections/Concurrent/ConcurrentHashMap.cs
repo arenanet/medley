@@ -589,10 +589,7 @@ namespace ArenaNet.Medley.Collections.Concurrent
 
         /// <summary>
         /// Applies a supplemental hash function to a given hashCode, which
-        /// defends against poor quality hash functions.  This is critical
-        /// because HashMap uses power-of-two length hash tables, that
-        /// otherwise encounter collisions for hashCodes that do not differ
-        /// in lower bits.
+        /// defends against poor quality hash functions.
         /// </summary>
         /// <param name="hashCode"></param>
         /// <returns></returns>
