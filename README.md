@@ -1,4 +1,4 @@
-Medley
+<img src="http://cdn.flaticon.com/png/256/64749.png" alt="Icon" width="30" height="30"/> Medley
 =====
 [![Build status](https://ci.appveyor.com/api/projects/status/cvl40gehv0t334rs?svg=true)](https://ci.appveyor.com/project/elvirb/medley)
 [![License](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0)
