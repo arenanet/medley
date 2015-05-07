@@ -442,37 +442,34 @@ namespace ArenaNet.Medley.Collections.Concurrent
             int hash = Smear(comparer.GetHashCode(key));
             int index = IndexFor(hash, buckets.Length);
 
-            lock (GetMutexFor(index))
-            {
-                Node foundNode = buckets[index];
+            Node foundNode = buckets[index];
 
-                if (foundNode == null)
+            if (foundNode == null)
+            {
+                value = default(V);
+                return false;
+            }
+            else
+            {
+                do
                 {
-                    value = default(V);
-                    return false;
+                    if (comparer.Equals(foundNode.kvp.Key, key))
+                    {
+                        break;
+                    }
+
+                    foundNode = foundNode.next;
+                } while (foundNode != null);
+
+                if (foundNode != null)
+                {
+                    value = foundNode.kvp.Value;
+                    return true;
                 }
                 else
                 {
-                    do
-                    {
-                        if (comparer.Equals(foundNode.kvp.Key, key))
-                        {
-                            break;
-                        }
-
-                        foundNode = foundNode.next;
-                    } while (foundNode != null);
-
-                    if (foundNode != null)
-                    {
-                        value = foundNode.kvp.Value;
-                        return true;
-                    }
-                    else
-                    {
-                        value = default(V);
-                        return false;
-                    }
+                    value = default(V);
+                    return false;
                 }
             }
         }
