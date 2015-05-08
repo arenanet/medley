@@ -21,7 +21,7 @@ namespace ArenaNet.Medley.Collections
     /// A linked list that can be modified while being iterated upon.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class IterableLinkedList<T> : IEnumerable<T>, IEnumerable
+    public class IterableLinkedList<T> : IQueue<T>, IEnumerable<T>, IEnumerable
     {
         internal IterableLinkedListNode<T> root = null;
         internal IterableLinkedListNode<T> tail = null;
@@ -232,6 +232,25 @@ namespace ArenaNet.Medley.Collections
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Enqueue the item to the end of this list.
+        /// </summary>
+        /// <param name="item"></param>
+        public void Enqueue(T item)
+        {
+            AddLast(item);
+        }
+
+        /// <summary>
+        /// Dequeues an item from the front of the list.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public bool Dequeue(out T item)
+        {
+            return RemoveFirst(out item);
         }
     }
 
