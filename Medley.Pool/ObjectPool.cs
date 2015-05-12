@@ -158,6 +158,7 @@ namespace ArenaNet.Medley.Pool
         {
             Interlocked.Decrement(ref totalPoolSize);
 
+            pooledObject.RefCount.Value = 0;
             pooledObject.Pool = null;
         }
     }
