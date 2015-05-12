@@ -19,6 +19,17 @@ using System.Threading;
 namespace ArenaNet.Medley.Pool
 {
     /// <summary>
+    /// Defines the current state of a pooled object.
+    /// </summary>
+    public enum PooledObjectState : int
+    {
+        NONE,
+        POOLED,
+        USED,
+        DISPOSED
+    }
+
+    /// <summary>
     /// A pooled object.
     /// </summary>
     /// <typeparam name="T">the type of the object</typeparam>
@@ -83,19 +94,11 @@ namespace ArenaNet.Medley.Pool
             internal set;
         }
 
-        internal enum PooledObjectState : int
-        {
-            NONE,
-            POOLED,
-            USED,
-            DISPOSED
-        }
-
         /// <summary>
         /// This value is owned by the Pool - not this object
         /// </summary>
         internal int _state = (int)PooledObjectState.NONE;
-        internal PooledObjectState State 
+        public PooledObjectState State 
         {
             set
             {

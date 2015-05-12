@@ -90,7 +90,7 @@ namespace ArenaNet.Medley.Pool
                 Interlocked.Increment(ref totalPoolSize);
             }
 
-            pooledObject.State = PooledObject<T>.PooledObjectState.USED;
+            pooledObject.State = PooledObjectState.USED;
             pooledObject.RefCount.Value = 0;
 
             return pooledObject;
@@ -107,7 +107,7 @@ namespace ArenaNet.Medley.Pool
                 throw new ArgumentNullException("PooledObject cannot be null.");
             }
 
-            if (pooledObject.State != PooledObject<T>.PooledObjectState.USED)
+            if (pooledObject.State != PooledObjectState.USED)
             {
                 throw new ArgumentException("PooledObject is already pooled.");
             }
@@ -119,9 +119,9 @@ namespace ArenaNet.Medley.Pool
 
             while (true)
             {
-                if (pooledObject._state == (int)PooledObject<T>.PooledObjectState.USED)
+                if (pooledObject._state == (int)PooledObjectState.USED)
                 {
-                    if (Interlocked.CompareExchange(ref pooledObject._state, (int)PooledObject<T>.PooledObjectState.NONE, (int)PooledObject<T>.PooledObjectState.USED) == (int)PooledObject<T>.PooledObjectState.USED)
+                    if (Interlocked.CompareExchange(ref pooledObject._state, (int)PooledObjectState.NONE, (int)PooledObjectState.USED) == (int)PooledObjectState.USED)
                     {
                         int currentPercentile = (int)(((float)(availableObjects + 1) / (float)totalPoolSize) * 100f);
 
@@ -133,7 +133,7 @@ namespace ArenaNet.Medley.Pool
                         if (currentPercentile > trimPercentile || totalPoolSize <= minimumPoolSize)
                         {
                             pool.Enqueue(pooledObject);
-                            pooledObject.State = PooledObject<T>.PooledObjectState.POOLED;
+                            pooledObject.State = PooledObjectState.POOLED;
 
                             Interlocked.Increment(ref availableObjects);
                         }
