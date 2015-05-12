@@ -12,6 +12,7 @@
  * permissions and limitations under the License.
  */
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -22,7 +23,7 @@ namespace ArenaNet.Medley.Collections.Concurrent
     /// </summary>
     /// <typeparam name="K">the key type</typeparam>
     /// <typeparam name="V">the value type</typeparam>
-    public class ConcurrentHashMap<K, V> : IDictionary<K, V>
+    public class ConcurrentHashMap<K, V> : IDictionary<K, V>, IEnumerable<KeyValuePair<K, V>>, ICollection<KeyValuePair<K, V>>, IDictionary, IEnumerable, ICollection
     {
         #region Defaults
         public static readonly IEqualityComparer<K> DefaultComparer = EqualityComparer<K>.Default;
@@ -68,6 +69,30 @@ namespace ArenaNet.Medley.Collections.Concurrent
         }
 
         /// <summary>
+        /// Always returns false.
+        /// </summary>
+        public bool IsFixedSize
+        {
+            get { return false; }
+        }
+
+        /// <summary>
+        /// Always returns false.
+        /// </summary>
+        public bool IsSynchronized
+        {
+            get { return false; }
+        }
+
+        /// <summary>
+        /// Always returns a new object.
+        /// </summary>
+        public object SyncRoot
+        {
+            get { return new object(); }
+        }
+
+        /// <summary>
         /// Create a concurrent hashmap that stripes access to the undelying buckets.
         /// </summary>
         /// <param name="numberOfBuckets"></param>
@@ -106,7 +131,29 @@ namespace ArenaNet.Medley.Collections.Concurrent
         /// <summary>
         /// Returns all the keys in this hash map.
         /// </summary>
+        ICollection IDictionary.Keys
+        {
+            get
+            {
+                return KeyList;
+            }
+        }
+
+        /// <summary>
+        /// Returns all the keys in this hash map.
+        /// </summary>
         public ICollection<K> Keys
+        {
+            get
+            {
+                return KeyList;
+            }
+        }
+
+        /// <summary>
+        /// A list of keys.
+        /// </summary>
+        internal List<K> KeyList
         {
             get
             {
@@ -131,9 +178,31 @@ namespace ArenaNet.Medley.Collections.Concurrent
         }
 
         /// <summary>
+        /// Returns all the values in this hash map.
+        /// </summary>
+        ICollection IDictionary.Values
+        {
+            get
+            {
+                return ValueList;
+            }
+        }
+
+        /// <summary>
         /// Returns are the values in this hash map.
         /// </summary>
         public ICollection<V> Values
+        {
+            get
+            {
+                return ValueList;
+            }
+        }
+
+        /// <summary>
+        /// A list of values.
+        /// </summary>
+        internal List<V> ValueList
         {
             get
             {
@@ -154,6 +223,23 @@ namespace ArenaNet.Medley.Collections.Concurrent
                 }
 
                 return values;
+            }
+        }
+
+        /// <summary>
+        /// Array accessors for this hash map.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public object this[object key]
+        {
+            get
+            {
+                return this[(K)key];
+            }
+            set
+            {
+                this[(K)key] = (V)value;
             }
         }
 
@@ -188,6 +274,26 @@ namespace ArenaNet.Medley.Collections.Concurrent
                     Add(key, value);
                 }
             }
+        }
+
+        /// <summary>
+        /// Adds the given key and value to this hash map.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        public void Add(object key, object value)
+        {
+            Add((K)key, (V)value);
+        }
+
+        /// <summary>
+        /// Adds a key and a value to this hash map.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        public void Add(K key, V value)
+        {
+            Add(new KeyValuePair<K, V>(key, value));
         }
 
         /// <summary>
@@ -240,13 +346,13 @@ namespace ArenaNet.Medley.Collections.Concurrent
         }
 
         /// <summary>
-        /// Adds a key and a value to this hash map.
+        /// Returns true if thie hash map contains the given key.
         /// </summary>
         /// <param name="key"></param>
-        /// <param name="value"></param>
-        public void Add(K key, V value)
+        /// <returns></returns>
+        public bool Contains(object key)
         {
-            Add(new KeyValuePair<K, V>(key, value));
+            return Contains((K)key);
         }
 
         /// <summary>
@@ -308,6 +414,15 @@ namespace ArenaNet.Medley.Collections.Concurrent
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Removes the key value pair with the given key.
+        /// </summary>
+        /// <param name="key"></param>
+        public void Remove(object key)
+        {
+            Remove((K)key);
         }
 
         /// <summary>
@@ -499,24 +614,43 @@ namespace ArenaNet.Medley.Collections.Concurrent
         /// <param name="arrayIndex"></param>
         public void CopyTo(KeyValuePair<K, V>[] array, int arrayIndex)
         {
-            if (arrayIndex > array.Length)
+            CopyTo((Array)array, arrayIndex);
+        }
+
+        /// <summary>
+        /// Copies the contenst of this hash map into the given array.
+        /// </summary>
+        /// <param name="array"></param>
+        /// <param name="index"></param>
+        public void CopyTo(Array array, int index)
+        {
+            if (index > array.Length)
             {
                 return;
             }
 
             IEnumerator<KeyValuePair<K, V>> enumerator = GetEnumerator();
 
-            for (int i = arrayIndex; i < array.Length; i++)
+            for (int i = index; i < array.Length; i++)
             {
                 if (enumerator.MoveNext())
                 {
-                    array[i] = enumerator.Current;
+                    array.SetValue(enumerator.Current, i);
                 }
                 else
                 {
                     break;
                 }
             }
+        }
+
+        /// <summary>
+        /// Gets the enumerator for this hash map.
+        /// </summary>
+        /// <returns></returns>
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         /// <summary>
@@ -548,9 +682,9 @@ namespace ArenaNet.Medley.Collections.Concurrent
         /// Gets the enumerator for this hash map.
         /// </summary>
         /// <returns></returns>
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        IDictionaryEnumerator IDictionary.GetEnumerator()
         {
-            return GetEnumerator();
+            return new ConcurrentHashmapDictionaryEnumerator(this);
         }
 
         /// <summary>
@@ -604,6 +738,96 @@ namespace ArenaNet.Medley.Collections.Concurrent
         private static int Abs(int x)
         {
             return (x + (x >> 31)) ^ (x >> 31);
+        }
+
+        /// <summary>
+        /// A hashMap iteratoe for thie hash map.
+        /// </summary>
+        private class ConcurrentHashmapDictionaryEnumerator : IDictionaryEnumerator
+        {
+            private List<DictionaryEntry> items;
+            private int index = -1;
+
+            /// <summary>
+            /// Creates a new hashMap iterator for the given hash map.
+            /// </summary>
+            /// <param name="hashMap"></param>
+            public ConcurrentHashmapDictionaryEnumerator(ConcurrentHashMap<K, V> hashMap)
+            {
+                items = new List<DictionaryEntry>();
+
+                for (int i = 0; i < hashMap.buckets.Length; i++)
+                {
+                    lock (hashMap.GetMutexFor(i))
+                    {
+                        Node currentNode = hashMap.buckets[i];
+
+                        while (currentNode != null)
+                        {
+                            hashMap.Add(currentNode.kvp);
+                            currentNode = currentNode.next;
+                        }
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Returns the current item.
+            /// </summary>
+            public Object Current { get { ValidateIndex(); return items[index]; } }
+
+            /// <summary>
+            /// Returns the current hashMap entry.
+            /// </summary>
+            public DictionaryEntry Entry
+            {
+                get { return (DictionaryEntry)Current; }
+            }
+
+            /// <summary>
+            /// Returns the key of the current item.
+            /// </summary>
+            public Object Key { get { ValidateIndex(); return items[index].Key; } }
+
+            /// <summary>
+            /// Returns the value of the current item.
+            /// </summary>
+            public Object Value { get { ValidateIndex(); return items[index].Value; } }
+
+            /// <summary>
+            /// Advance to the next item.
+            /// </summary>
+            /// <returns></returns>
+ 
+            public Boolean MoveNext()
+            {
+                if (index < items.Count - 1) 
+                { 
+                    index++; 
+                    return true;
+                }
+
+                return false;
+            }
+
+            /// <summary>
+            /// Validate the enumeration index and throw an exception if the index is out of range. 
+            /// </summary>
+            private void ValidateIndex()
+            {
+                if (index < 0 || index >= items.Count)
+                {
+                    throw new InvalidOperationException("Enumerator is before or after the collection.");
+                }
+            }
+
+            /// <summary>
+            /// Reset the index to restart the enumeration.
+            /// </summary>
+            public void Reset()
+            {
+                index = -1;
+            }
         }
     }
 }

@@ -12,8 +12,8 @@
  * permissions and limitations under the License.
  */
 using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 
 namespace ArenaNet.Medley.Collections.Concurrent
 {
@@ -21,7 +21,7 @@ namespace ArenaNet.Medley.Collections.Concurrent
     /// A concurrent hashset implementation built on top of the concurrent hashmap.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class ConcurrentHashSet<T> : ICollection<T>
+    public class ConcurrentHashSet<T> : ICollection<T>, ICollection, IEnumerable<T>, IEnumerable
     {
         private readonly ConcurrentHashMap<T, bool> dictionary;
 
@@ -34,11 +34,27 @@ namespace ArenaNet.Medley.Collections.Concurrent
         }
 
         /// <summary>
-        /// Returns false.
+        /// Always returns false.
         /// </summary>
         public bool IsReadOnly
         {
             get { return this.dictionary.IsReadOnly; }
+        }
+
+        /// <summary>
+        /// Always returns false.
+        /// </summary>
+        public bool IsSynchronized
+        {
+            get { return false; }
+        }
+
+        /// <summary>
+        /// Always returns a new object.
+        /// </summary>
+        public object SyncRoot
+        {
+            get { return new object(); }
         }
 
         /// <summary>
@@ -96,7 +112,17 @@ namespace ArenaNet.Medley.Collections.Concurrent
         /// <param name="arrayIndex"></param>
         public void CopyTo(T[] array, int arrayIndex)
         {
-            this.dictionary.Keys.CopyTo(array, arrayIndex);
+            this.dictionary.KeyList.CopyTo(array, arrayIndex);
+        }
+
+        /// <summary>
+        /// Copies the contents of this hash set to the given array.
+        /// </summary>
+        /// <param name="array"></param>
+        /// <param name="index"></param>
+        public void CopyTo(Array array, int index)
+        {
+            this.dictionary.KeyList.CopyTo((T[])array, index);
         }
 
         /// <summary>
