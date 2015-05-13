@@ -277,6 +277,81 @@ namespace ArenaNet.Medley.Collections.Concurrent
         }
 
         /// <summary>
+        /// Puts the given key in the hashmap or updates it if the upsert flag is set to true.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="upsert"></param>
+        /// <returns></returns>
+        public bool Put(K key, V value, bool upsert = true)
+        {
+            return Put(new KeyValuePair<K, V>(key, value), upsert);
+        }
+
+        /// <summary>
+        /// Puts the given key in the hashmap or updates it if the upsert flag is set to true.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="updateIfSet"></param>
+        public bool Put(KeyValuePair<K, V> item, bool upsert = true)
+        {
+            int hash = Smear(comparer.GetHashCode(item.Key));
+            int index = IndexFor(hash, buckets.Length);
+
+            lock (GetMutexFor(index))
+            {
+                Node foundNode = buckets[index];
+
+                if (foundNode == null)
+                {
+                    buckets[index] = new Node(item);
+                    Interlocked.Increment(ref count);
+
+                    return true;
+                }
+                else
+                {
+                    Node lastNode = null;
+
+                    do
+                    {
+                        if (comparer.Equals(foundNode.kvp.Key, item.Key))
+                        {
+                            break;
+                        }
+
+                        lastNode = foundNode;
+                        foundNode = foundNode.next;
+                    } while (foundNode != null);
+
+                    if (foundNode != null)
+                    {
+                        if (upsert)
+                        {
+                            foundNode.kvp = item;
+
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        lastNode.next = new Node(
+                            item,
+                            lastNode.next
+                        );
+                        Interlocked.Increment(ref count);
+
+                        return true;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Adds the given key and value to this hash map.
         /// </summary>
         /// <param name="key"></param>
@@ -302,47 +377,7 @@ namespace ArenaNet.Medley.Collections.Concurrent
         /// <param name="item"></param>
         public void Add(KeyValuePair<K, V> item)
         {
-            int hash = Smear(comparer.GetHashCode(item.Key));
-            int index = IndexFor(hash, buckets.Length);
-
-            lock (GetMutexFor(index))
-            {
-                Node foundNode = buckets[index];
-
-                if (foundNode == null)
-                {
-                    buckets[index] = new Node(item);
-                    Interlocked.Increment(ref count);
-                }
-                else
-                {
-                    Node lastNode = null;
-
-                    do
-                    {
-                        if (comparer.Equals(foundNode.kvp.Key, item.Key))
-                        {
-                            break;
-                        }
-
-                        lastNode = foundNode;
-                        foundNode = foundNode.next;
-                    } while (foundNode != null);
-
-                    if (foundNode != null)
-                    {
-                        foundNode.kvp = item;
-                    }
-                    else
-                    {
-                        lastNode.next = new Node(
-                            item,
-                            lastNode.next
-                        );
-                        Interlocked.Increment(ref count);
-                    }
-                }
-            }
+            Put(item, true);
         }
 
         /// <summary>

@@ -69,6 +69,16 @@ namespace ArenaNet.Medley.Collections.Concurrent
         }
 
         /// <summary>
+        /// Adds the given item to this set and returns true if this value wasn't set before.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public bool TryAdd(T item)
+        {
+            return this.dictionary.Put(item, true, false);
+        }
+
+        /// <summary>
         /// Add a new item into this hashset.
         /// </summary>
         /// <param name="item"></param>

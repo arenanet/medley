@@ -26,6 +26,18 @@ namespace ArenaNet.Medley.Collections.Concurrent
         }
 
         [TestMethod]
+        public void TestTryAdd()
+        {
+            ConcurrentHashSet<string> set = new ConcurrentHashSet<string>(StringComparer.Ordinal);
+            Assert.IsTrue(set.TryAdd("one"));
+            Assert.IsTrue(set.TryAdd("two"));
+            Assert.IsFalse(set.TryAdd("two"));
+            Assert.IsTrue(set.TryAdd("three"));
+
+            Assert.AreEqual(3, set.Count);
+        }
+
+        [TestMethod]
         public void TestAddIgnoreCaseComparer()
         {
             ConcurrentHashSet<string> set = new ConcurrentHashSet<string>(StringComparer.OrdinalIgnoreCase);
