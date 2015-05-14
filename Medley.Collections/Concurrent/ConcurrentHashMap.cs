@@ -293,62 +293,12 @@ namespace ArenaNet.Medley.Collections.Concurrent
         /// </summary>
         /// <param name="item"></param>
         /// <param name="updateIfSet"></param>
+        /// <returns></returns>
         public bool Put(KeyValuePair<K, V> item, bool upsert = true)
         {
-            int hash = Smear(comparer.GetHashCode(item.Key));
-            int index = IndexFor(hash, buckets.Length);
+            V throwAway;
 
-            lock (GetMutexFor(index))
-            {
-                Node foundNode = buckets[index];
-
-                if (foundNode == null)
-                {
-                    buckets[index] = new Node(item);
-                    Interlocked.Increment(ref count);
-
-                    return true;
-                }
-                else
-                {
-                    Node lastNode = null;
-
-                    do
-                    {
-                        if (comparer.Equals(foundNode.kvp.Key, item.Key))
-                        {
-                            break;
-                        }
-
-                        lastNode = foundNode;
-                        foundNode = foundNode.next;
-                    } while (foundNode != null);
-
-                    if (foundNode != null)
-                    {
-                        if (upsert)
-                        {
-                            foundNode.kvp = item;
-
-                            return true;
-                        }
-                        else
-                        {
-                            return false;
-                        }
-                    }
-                    else
-                    {
-                        lastNode.next = new Node(
-                            item,
-                            lastNode.next
-                        );
-                        Interlocked.Increment(ref count);
-
-                        return true;
-                    }
-                }
-            }
+            return TryAdd(item, out throwAway, upsert);
         }
 
         /// <summary>
@@ -378,6 +328,87 @@ namespace ArenaNet.Medley.Collections.Concurrent
         public void Add(KeyValuePair<K, V> item)
         {
             Put(item, true);
+        }
+
+        /// <summary>
+        /// Attempts to add a value.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="existingValue"></param>
+        /// <param name="upsert"></param>
+        /// <returns></returns>
+        public bool TryAdd(K key, V value, out V existingValue, bool upsert = true)
+        {
+            return TryAdd(new KeyValuePair<K, V>(key, value), out existingValue, upsert);
+        }
+
+        /// <summary>
+        /// Attempts to add a value.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="existingValue"></param>
+        /// <param name="upsert"></param>
+        /// <returns></returns>
+        public bool TryAdd(KeyValuePair<K, V> item, out V existingValue, bool upsert = true)
+        {
+            int hash = Smear(comparer.GetHashCode(item.Key));
+            int index = IndexFor(hash, buckets.Length);
+
+            lock (GetMutexFor(index))
+            {
+                Node foundNode = buckets[index];
+
+                if (foundNode == null)
+                {
+                    buckets[index] = new Node(item);
+                    Interlocked.Increment(ref count);
+
+                    existingValue = default(V);
+                    return true;
+                }
+                else
+                {
+                    Node lastNode = null;
+
+                    do
+                    {
+                        if (comparer.Equals(foundNode.kvp.Key, item.Key))
+                        {
+                            break;
+                        }
+
+                        lastNode = foundNode;
+                        foundNode = foundNode.next;
+                    } while (foundNode != null);
+
+                    if (foundNode != null)
+                    {
+                        bool success = false;
+                        V previousValue = foundNode.kvp.Value;
+
+                        if (upsert)
+                        {
+                            foundNode.kvp = item;
+                            success = true;
+                        }
+
+                        existingValue = previousValue;
+                        return success;
+                    }
+                    else
+                    {
+                        lastNode.next = new Node(
+                            item,
+                            lastNode.next
+                        );
+                        Interlocked.Increment(ref count);
+
+                        existingValue = default(V);
+                        return true;
+                    }
+                }
+            }
         }
 
         /// <summary>
