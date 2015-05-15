@@ -90,7 +90,7 @@ namespace ArenaNet.Medley.Pool
                 Interlocked.Increment(ref totalPoolSize);
             }
 
-            pooledObject.State = PooledObjectState.USED;
+            pooledObject._state = (int)PooledObjectState.USED;
             pooledObject.RefCount.Value = 0;
 
             return pooledObject;
@@ -107,46 +107,35 @@ namespace ArenaNet.Medley.Pool
                 throw new ArgumentNullException("PooledObject cannot be null.");
             }
 
-            if (pooledObject.State != PooledObjectState.USED)
-            {
-                throw new ArgumentException("PooledObject is already pooled.");
-            }
-
             if (pooledObject.Pool != this)
             {
                 throw new ArgumentException("PooledObject does not belong to this pool.");
             }
 
-            while (true)
+            if (Interlocked.CompareExchange(ref pooledObject._state, (int)PooledObjectState.NONE, (int)PooledObjectState.USED) == (int)PooledObjectState.USED)
             {
-                if (pooledObject._state == (int)PooledObjectState.USED)
+                int currentPercentile = (int)(((float)(availableObjects + 1) / (float)totalPoolSize) * 100f);
+
+                if (onDestroyObject != null)
                 {
-                    if (Interlocked.CompareExchange(ref pooledObject._state, (int)PooledObjectState.NONE, (int)PooledObjectState.USED) == (int)PooledObjectState.USED)
-                    {
-                        int currentPercentile = (int)(((float)(availableObjects + 1) / (float)totalPoolSize) * 100f);
+                    pooledObject.Value = onDestroyObject(pooledObject.Value);
+                }
 
-                        if (onDestroyObject != null)
-                        {
-                            pooledObject.Value = onDestroyObject(pooledObject.Value);
-                        }
+                if (currentPercentile > trimPercentile || totalPoolSize <= minimumPoolSize)
+                {
+                    pooledObject._state = (int)PooledObjectState.POOLED;
+                    pool.Enqueue(pooledObject);
 
-                        if (currentPercentile > trimPercentile || totalPoolSize <= minimumPoolSize)
-                        {
-                            pool.Enqueue(pooledObject);
-                            pooledObject.State = PooledObjectState.POOLED;
-
-                            Interlocked.Increment(ref availableObjects);
-                        }
-                        else
-                        {
-                            pooledObject.Dispose();
-                        }
-                    }
+                    Interlocked.Increment(ref availableObjects);
                 }
                 else
                 {
-                    break;
+                    pooledObject.Dispose();
                 }
+            }
+            else
+            {
+                throw new ArgumentException("PooledObject is already pooled. State: " + pooledObject.State);
             }
         }
 

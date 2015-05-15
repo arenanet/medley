@@ -34,6 +34,10 @@ namespace ArenaNet.Medley.Collections.Concurrent
         private Node head = null;
         private Node tail = null;
 
+        private int count = 0;
+
+        public int Count { get { return count; } }
+
         /// <summary>
         /// Creates an empty queue.
         /// </summary>
@@ -68,6 +72,8 @@ namespace ArenaNet.Medley.Collections.Concurrent
                     {
                         if (Interlocked.CompareExchange(ref currentTail.next, node, currentNext) == currentNext)
                         {
+                            Interlocked.Increment(ref count);
+
                             break;
                         }
                     }
@@ -117,6 +123,8 @@ namespace ArenaNet.Medley.Collections.Concurrent
                     }
                 }
             }
+
+            Interlocked.Decrement(ref count);
 
             return true;
         }

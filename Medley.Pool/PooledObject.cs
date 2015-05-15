@@ -140,30 +140,35 @@ namespace ArenaNet.Medley.Pool
         /// </summary>
         ~PooledObject()
         {
-            Dispose();
+            Dispose(false);
         }
 
         /// <summary>
-        /// Disposes this pooled object and will not be usable again.
+        /// Closes this buffer.
         /// </summary>
         public void Dispose()
         {
-            while (true)
-            {
-                int currentState = _state;
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
-                if (currentState != (int)PooledObjectState.DISPOSED)
-                {
-                    if (Interlocked.CompareExchange(ref _state, (int)PooledObjectState.DISPOSED, currentState) == currentState)
-                    {
-                        Pool.OnDisposed(this);
-                    }
-                }
-                else
-                {
-                    break;
-                }
+        /// <summary>
+        /// Protected implementation of Dispose pattern.
+        /// </summary>
+        /// <param name="disposing"></param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_state == (int)PooledObjectState.DISPOSED)
+                return;
+
+            if (disposing)
+            {
+                // no managed objects
             }
+
+            Pool.OnDisposed(this);
+
+            _state = (int)PooledObjectState.DISPOSED;
         }
     }
 }

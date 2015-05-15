@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Collections.Concurrent;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ArenaNet.Medley.Collections.Concurrent
@@ -71,6 +72,128 @@ namespace ArenaNet.Medley.Collections.Concurrent
             {
                 Assert.IsFalse(found[i]);
             }
+        }
+
+        [TestMethod]
+        public void TestMultiThreadedComplex()
+        {
+            ConcurrentLinkedQueue<int> queue = new ConcurrentLinkedQueue<int>();
+
+            int count = 0;
+
+            BlockingCollection<int> pooledObjects = new BlockingCollection<int>();
+
+            for (int i = 0; i < 100; i++)
+            {
+                Interlocked.Increment(ref count);
+
+                ThreadPool.QueueUserWorkItem((object state) =>
+                {
+                    try
+                    {
+                        queue.Enqueue((int)state);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Error: " + e);
+                    }
+                }, count);
+
+                Interlocked.Increment(ref count);
+
+                ThreadPool.QueueUserWorkItem((object state) =>
+                {
+                    try
+                    {
+                        queue.Enqueue((int)state);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Error: " + e);
+                    }
+                }, count);
+
+                ThreadPool.QueueUserWorkItem((object state) =>
+                {
+                    try
+                    {
+                        int val;
+
+                        while (!queue.Dequeue(out val))
+                        {
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Error: " + e);
+                    }
+
+                    Interlocked.Decrement(ref count);
+                });
+
+                Interlocked.Increment(ref count);
+
+                ThreadPool.QueueUserWorkItem((object state) =>
+                {
+                    try
+                    {
+                        queue.Enqueue((int)state);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Error: " + e);
+                    }
+                }, count);
+
+                ThreadPool.QueueUserWorkItem((object state) =>
+                {
+                    try
+                    {
+                        int val;
+
+                        while (!queue.Dequeue(out val))
+                        {
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Error: " + e);
+                    }
+
+                    Interlocked.Decrement(ref count);
+                });
+
+                ThreadPool.QueueUserWorkItem((object state) =>
+                {
+                    try
+                    {
+                        int val;
+
+                        while (!queue.Dequeue(out val))
+                        {
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Error: " + e);
+                    }
+
+                    Interlocked.Decrement(ref count);
+                });
+            }
+
+            DateTime startTime = DateTime.Now;
+
+            while (count > 0 && DateTime.Now.Subtract(startTime).TotalSeconds < 10)
+            {
+                Console.WriteLine("Current count: " + count);
+
+                Thread.Sleep(1);
+            }
+
+            Assert.AreEqual(0, count);
+            Assert.AreEqual(0, queue.Count);
+            //Assert.AreEqual(pool.TotalNumberOfObjects, pool.ObjectsInPool);
         }
     }
 }

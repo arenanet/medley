@@ -12,6 +12,8 @@
  * permissions and limitations under the License.
  */
 using System;
+using System.Threading;
+using System.Collections.Concurrent;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ArenaNet.Medley.Pool
@@ -19,6 +21,140 @@ namespace ArenaNet.Medley.Pool
     [TestClass]
     public class ObjectPoolTest
     {
+        [TestMethod]
+        public void TestMultiThreaded()
+        {
+            int poolCount = 0;
+
+            int count = 0;
+
+            ObjectPool<int> pool = new ObjectPool<int>(() => { return Interlocked.Increment(ref poolCount) - 1; });
+
+            ConcurrentQueue<PooledObject<int>> pooledObjects = new ConcurrentQueue<PooledObject<int>>();
+
+            for (int i = 0; i < 100000; i++)
+            {
+                Interlocked.Increment(ref count);
+
+                ThreadPool.QueueUserWorkItem((object state) =>
+                {
+                    try
+                    {
+                        pooledObjects.Enqueue(pool.Borrow());
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Error: " + e);
+                    }
+                });
+
+                Interlocked.Increment(ref count);
+
+                ThreadPool.QueueUserWorkItem((object state) =>
+                {
+                    try
+                    {
+                        pooledObjects.Enqueue(pool.Borrow());
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Error: " + e);
+                    }
+                });
+
+                ThreadPool.QueueUserWorkItem((object state) =>
+                {
+                    try
+                    {
+                        PooledObject<int> pooledObject;
+
+                        while (!pooledObjects.TryDequeue(out pooledObject))
+                        {
+
+                        }
+
+                        pooledObject.Return();
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Error: " + e);
+                    }
+
+                    Interlocked.Decrement(ref count);
+                });
+
+                Interlocked.Increment(ref count);
+
+                ThreadPool.QueueUserWorkItem((object state) =>
+                {
+                    try
+                    {
+                        pooledObjects.Enqueue(pool.Borrow());
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Error: " + e);
+                    }
+                });
+
+                ThreadPool.QueueUserWorkItem((object state) =>
+                {
+                    try
+                    {
+                        PooledObject<int> pooledObject;
+
+                        while (!pooledObjects.TryDequeue(out pooledObject))
+                        {
+
+                        }
+
+                        pooledObject.Return();
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Error: " + e);
+                    }
+
+                    Interlocked.Decrement(ref count);
+                });
+
+                ThreadPool.QueueUserWorkItem((object state) =>
+                {
+                    try
+                    {
+                        PooledObject<int> pooledObject;
+
+                        while (!pooledObjects.TryDequeue(out pooledObject))
+                        {
+
+                        }
+
+                        pooledObject.Return();
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Error: " + e);
+                    }
+
+                    Interlocked.Decrement(ref count);
+                });
+            }
+
+            DateTime startTime = DateTime.Now;
+
+            while (count > 0 && DateTime.Now.Subtract(startTime).TotalSeconds < 10)
+            {
+                Console.WriteLine("Current count: " + count);
+
+                Console.WriteLine("Total: " + pool.TotalNumberOfObjects + ", In Pool: " + pool.ObjectsInPool);
+
+                Thread.Sleep(1);
+            }
+
+            Assert.AreEqual(0, count);
+            Assert.AreEqual(pool.TotalNumberOfObjects, pool.ObjectsInPool);
+        }
+
         [TestMethod]
         public void TestGarbageCollectedPooledObject()
         {
