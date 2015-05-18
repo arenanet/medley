@@ -352,6 +352,11 @@ namespace ArenaNet.Medley.Collections.Concurrent
         /// <returns></returns>
         public bool TryAdd(KeyValuePair<K, V> item, out V existingValue, bool upsert = true)
         {
+            if (item.Key == null)
+            {
+                throw new ArgumentNullException("'key' cannot be null.");
+            }
+
             int hash = Smear(comparer.GetHashCode(item.Key));
             int index = IndexFor(hash, buckets.Length);
 
@@ -428,6 +433,11 @@ namespace ArenaNet.Medley.Collections.Concurrent
         /// <returns></returns>
         public bool Contains(KeyValuePair<K, V> item)
         {
+            if (item.Key == null)
+            {
+                throw new ArgumentNullException("'key' cannot be null.");
+            }
+
             V response;
 
             if (TryGetValue(item.Key, out response))
@@ -447,6 +457,11 @@ namespace ArenaNet.Medley.Collections.Concurrent
         /// <returns></returns>
         public bool ContainsKey(K key)
         {
+            if (key == null)
+            {
+                throw new ArgumentNullException("'key' cannot be null.");
+            }
+
             int hash = Smear(comparer.GetHashCode(key));
             int index = IndexFor(hash, buckets.Length);
 
@@ -508,6 +523,11 @@ namespace ArenaNet.Medley.Collections.Concurrent
         /// <returns></returns>
         public bool Remove(K key)
         {
+            if (key == null)
+            {
+                throw new ArgumentNullException("'key' cannot be null.");
+            }
+
             int hash = Smear(comparer.GetHashCode(key));
             int index = IndexFor(hash, buckets.Length);
 
@@ -564,6 +584,11 @@ namespace ArenaNet.Medley.Collections.Concurrent
         /// <returns></returns>
         public bool Remove(K key, V value)
         {
+            if (key == null)
+            {
+                throw new ArgumentNullException("'key' cannot be null.");
+            }
+
             int hash = Smear(comparer.GetHashCode(key));
             int index = IndexFor(hash, buckets.Length);
 
@@ -620,6 +645,11 @@ namespace ArenaNet.Medley.Collections.Concurrent
         /// <returns></returns>
         public bool TryGetValue(K key, out V value)
         {
+            if (key == null)
+            {
+                throw new ArgumentNullException("'key' cannot be null.");
+            }
+
             int hash = Smear(comparer.GetHashCode(key));
             int index = IndexFor(hash, buckets.Length);
 
@@ -690,6 +720,11 @@ namespace ArenaNet.Medley.Collections.Concurrent
         /// <param name="index"></param>
         public void CopyTo(Array array, int index)
         {
+            if (array == null)
+            {
+                throw new ArgumentNullException("'array' cannot be null.");
+            }
+
             if (index > array.Length)
             {
                 return;

@@ -75,6 +75,11 @@ namespace ArenaNet.Medley.Collections.Concurrent
         /// <returns></returns>
         public bool TryAdd(T item)
         {
+            if (item == null)
+            {
+                throw new ArgumentNullException("'item' cannot be null.");
+            }
+
             return this.dictionary.Put(item, true, false);
         }
 
@@ -84,6 +89,11 @@ namespace ArenaNet.Medley.Collections.Concurrent
         /// <param name="item"></param>
         public void Add(T item)
         {
+            if (item == null)
+            {
+                throw new ArgumentNullException("'item' cannot be null.");
+            }
+
             this.dictionary[item] = true;
         }
 
@@ -94,6 +104,11 @@ namespace ArenaNet.Medley.Collections.Concurrent
         /// <returns></returns>
         public bool Remove(T item)
         {
+            if (item == null)
+            {
+                throw new ArgumentNullException("'item' cannot be null.");
+            }
+
             return this.dictionary.Remove(item);
         }
 
@@ -112,6 +127,11 @@ namespace ArenaNet.Medley.Collections.Concurrent
         /// <returns></returns>
         public bool Contains(T item)
         {
+            if (item == null)
+            {
+                throw new ArgumentNullException("'item' cannot be null.");
+            }
+
             return this.dictionary.ContainsKey(item);
         }
 
@@ -122,6 +142,11 @@ namespace ArenaNet.Medley.Collections.Concurrent
         /// <param name="arrayIndex"></param>
         public void CopyTo(T[] array, int arrayIndex)
         {
+            if (array == null)
+            {
+                throw new ArgumentNullException("'array' cannot be null.");
+            }
+
             this.dictionary.KeyList.CopyTo(array, arrayIndex);
         }
 
@@ -132,6 +157,11 @@ namespace ArenaNet.Medley.Collections.Concurrent
         /// <param name="index"></param>
         public void CopyTo(Array array, int index)
         {
+            if (array == null)
+            {
+                throw new ArgumentNullException("'array' cannot be null.");
+            }
+
             this.dictionary.KeyList.CopyTo((T[])array, index);
         }
 
