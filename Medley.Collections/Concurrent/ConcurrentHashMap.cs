@@ -31,21 +31,6 @@ namespace ArenaNet.Medley.Collections.Concurrent
         public static readonly uint DefaultLockCount = 16;
         #endregion Defaults
 
-        /// <summary>
-        /// The node implementation.
-        /// </summary>
-        internal class Node
-        {
-            internal KeyValuePair<K, V> kvp;
-            internal Node next;
-
-            internal Node(KeyValuePair<K, V> kvp, Node next = null)
-            {
-                this.kvp = kvp;
-                this.next = next;
-            }
-        }
-
         private readonly IEqualityComparer<K> comparer;
 
         private Node[] buckets;
@@ -477,14 +462,7 @@ namespace ArenaNet.Medley.Collections.Concurrent
                     foundNode = foundNode.next;
                 } while (foundNode != null);
 
-                if (foundNode != null)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return foundNode != null;
             }
         }
 
@@ -742,7 +720,7 @@ namespace ArenaNet.Medley.Collections.Concurrent
         }
 
         /// <summary>
-        /// Copies the contents of this dictionary into the given dictionary.
+        /// Copies the contents of this hash map into the given dictionary.
         /// </summary>
         /// <param name="dictionary"></param>
         public void CopyTo(IDictionary<K, V> dictionary)
@@ -851,6 +829,21 @@ namespace ArenaNet.Medley.Collections.Concurrent
         private static int Abs(int x)
         {
             return (x + (x >> 31)) ^ (x >> 31);
+        }
+
+        /// <summary>
+        /// The node implementation.
+        /// </summary>
+        private class Node
+        {
+            internal KeyValuePair<K, V> kvp;
+            internal Node next;
+
+            internal Node(KeyValuePair<K, V> kvp, Node next = null)
+            {
+                this.kvp = kvp;
+                this.next = next;
+            }
         }
 
         /// <summary>
