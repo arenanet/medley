@@ -161,15 +161,12 @@ namespace ArenaNet.Medley.Collections.Concurrent
 
                 for (int i = 0; i < buckets.Length; i++)
                 {
-                    lock (GetMutexFor(i))
-                    {
-                        Node currentNode = buckets[i];
+                    Node currentNode = buckets[i];
 
-                        while (currentNode != null)
-                        {
-                            keys.Add(currentNode.kvp.Key);
-                            currentNode = currentNode.next;
-                        }
+                    while (currentNode != null)
+                    {
+                        keys.Add(currentNode.kvp.Key);
+                        currentNode = currentNode.next;
                     }
                 }
 
@@ -210,15 +207,12 @@ namespace ArenaNet.Medley.Collections.Concurrent
 
                 for (int i = 0; i < buckets.Length; i++)
                 {
-                    lock (GetMutexFor(i))
-                    {
-                        Node currentNode = buckets[i];
+                    Node currentNode = buckets[i];
 
-                        while (currentNode != null)
-                        {
-                            values.Add(currentNode.kvp.Value);
-                            currentNode = currentNode.next;
-                        }
+                    while (currentNode != null)
+                    {
+                        values.Add(currentNode.kvp.Value);
+                        currentNode = currentNode.next;
                     }
                 }
 
@@ -465,34 +459,31 @@ namespace ArenaNet.Medley.Collections.Concurrent
             int hash = Smear(comparer.GetHashCode(key));
             int index = IndexFor(hash, buckets.Length);
 
-            lock (GetMutexFor(index))
-            {
-                Node foundNode = buckets[index];
+            Node foundNode = buckets[index];
 
-                if (foundNode == null)
+            if (foundNode == null)
+            {
+                return false;
+            }
+            else
+            {
+                do
                 {
-                    return false;
+                    if (comparer.Equals(foundNode.kvp.Key, key))
+                    {
+                        break;
+                    }
+
+                    foundNode = foundNode.next;
+                } while (foundNode != null);
+
+                if (foundNode != null)
+                {
+                    return true;
                 }
                 else
                 {
-                    do
-                    {
-                        if (comparer.Equals(foundNode.kvp.Key, key))
-                        {
-                            break;
-                        }
-
-                        foundNode = foundNode.next;
-                    } while (foundNode != null);
-
-                    if (foundNode != null)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    return false;
                 }
             }
         }
@@ -730,17 +721,41 @@ namespace ArenaNet.Medley.Collections.Concurrent
                 return;
             }
 
-            IEnumerator<KeyValuePair<K, V>> enumerator = GetEnumerator();
-
             for (int i = index; i < array.Length; i++)
             {
-                if (enumerator.MoveNext())
-                {
-                    array.SetValue(enumerator.Current, i);
-                }
-                else
+                int bucketIndex = i - index;
+
+                if (bucketIndex >= buckets.Length)
                 {
                     break;
+                }
+
+                Node currentNode = buckets[bucketIndex];
+
+                while (currentNode != null)
+                {
+                    array.SetValue(currentNode.kvp, i);
+
+                    currentNode = currentNode.next;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Copies the contents of this dictionary into the given dictionary.
+        /// </summary>
+        /// <param name="dictionary"></param>
+        public void CopyTo(IDictionary<K, V> dictionary)
+        {
+            for (int i = 0; i < buckets.Length; i++)
+            {
+                Node currentNode = buckets[i];
+
+                while (currentNode != null)
+                {
+                    dictionary.Add(currentNode.kvp);
+
+                    currentNode = currentNode.next;
                 }
             }
         }
@@ -764,15 +779,12 @@ namespace ArenaNet.Medley.Collections.Concurrent
 
             for (int i = 0; i < buckets.Length; i++)
             {
-                lock (GetMutexFor(i))
-                {
-                    Node currentNode = buckets[i];
+                Node currentNode = buckets[i];
 
-                    while (currentNode != null)
-                    {
-                        kvps.Add(currentNode.kvp);
-                        currentNode = currentNode.next;
-                    }
+                while (currentNode != null)
+                {
+                    kvps.Add(currentNode.kvp);
+                    currentNode = currentNode.next;
                 }
             }
 
@@ -859,15 +871,12 @@ namespace ArenaNet.Medley.Collections.Concurrent
 
                 for (int i = 0; i < hashMap.buckets.Length; i++)
                 {
-                    lock (hashMap.GetMutexFor(i))
-                    {
-                        Node currentNode = hashMap.buckets[i];
+                    Node currentNode = hashMap.buckets[i];
 
-                        while (currentNode != null)
-                        {
-                            hashMap.Add(currentNode.kvp);
-                            currentNode = currentNode.next;
-                        }
+                    while (currentNode != null)
+                    {
+                        hashMap.Add(currentNode.kvp);
+                        currentNode = currentNode.next;
                     }
                 }
             }
