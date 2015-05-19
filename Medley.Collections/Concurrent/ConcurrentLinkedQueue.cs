@@ -28,11 +28,11 @@ namespace ArenaNet.Medley.Collections.Concurrent
         internal class Node
         {
             public T value;
-            public Node next = null;
+            public object next = null;
         }
 
-        private Node head = null;
-        private Node tail = null;
+        private object head = null;
+        private object tail = null;
 
         private int count = 0;
 
@@ -53,7 +53,7 @@ namespace ArenaNet.Medley.Collections.Concurrent
         /// <param name="item"></param>
         public void Enqueue(T item)
         {
-            Node node = new Node()
+            object node = new Node()
             {
                 value = item
             };
@@ -63,8 +63,8 @@ namespace ArenaNet.Medley.Collections.Concurrent
 
             while (true)
             {
-                currentTail = tail;
-                currentNext = tail.next;
+                currentTail = (Node)tail;
+                currentNext = (Node)((Node)tail).next;
 
                 if (currentTail == tail)
                 {
@@ -96,9 +96,9 @@ namespace ArenaNet.Medley.Collections.Concurrent
         {
             while (true)
             {
-                Node currentHead = head;
-                Node currentTail = tail;
-                Node currentNext = head.next;
+                Node currentHead = (Node)head;
+                Node currentTail = (Node)tail;
+                Node currentNext = (Node)currentHead.next;
 
                 if (currentHead == head)
                 {
