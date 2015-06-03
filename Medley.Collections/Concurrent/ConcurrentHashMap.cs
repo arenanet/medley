@@ -775,7 +775,7 @@ namespace ArenaNet.Medley.Collections.Concurrent
         /// <returns></returns>
         IDictionaryEnumerator IDictionary.GetEnumerator()
         {
-            return new ConcurrentHashmapDictionaryEnumerator(this);
+            return new ConcurrentHashMapDictionaryEnumerator(this);
         }
 
         /// <summary>
@@ -849,7 +849,7 @@ namespace ArenaNet.Medley.Collections.Concurrent
         /// <summary>
         /// A hashMap iteratoe for thie hash map.
         /// </summary>
-        private class ConcurrentHashmapDictionaryEnumerator : IDictionaryEnumerator
+        private class ConcurrentHashMapDictionaryEnumerator : IDictionaryEnumerator
         {
             private List<DictionaryEntry> items;
             private int index = -1;
@@ -858,7 +858,7 @@ namespace ArenaNet.Medley.Collections.Concurrent
             /// Creates a new hashMap iterator for the given hash map.
             /// </summary>
             /// <param name="hashMap"></param>
-            public ConcurrentHashmapDictionaryEnumerator(ConcurrentHashMap<K, V> hashMap)
+            public ConcurrentHashMapDictionaryEnumerator(ConcurrentHashMap<K, V> hashMap)
             {
                 items = new List<DictionaryEntry>();
 
@@ -868,7 +868,7 @@ namespace ArenaNet.Medley.Collections.Concurrent
 
                     while (currentNode != null)
                     {
-                        hashMap.Add(currentNode.kvp);
+                        items.Add(new DictionaryEntry(currentNode.kvp.Key, currentNode.kvp.Value));
                         currentNode = currentNode.next;
                     }
                 }
