@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 [![Stories in Ready](https://badge.waffle.io/arenanet/medley.png?label=ready&title=Ready)](http://waffle.io/arenanet/medley)
 
-A collection of various reusable C# components. 
+An assortment of various reusable C# components. 
 
 <b>Note:</b> Medley depends on the .NET 2.0 Framework and has been tested to work with Unity 3D on most platforms (including PC, Mac, Linux, iOS, and Android).
 
