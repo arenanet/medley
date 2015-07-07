@@ -49,6 +49,9 @@
       <Name>Medley.Pool</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Medley.Pool.Tests.licenseheader" />
+  </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
       <ItemGroup>

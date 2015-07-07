@@ -51,13 +51,18 @@
   </Choose>
   <ItemGroup>
     <Compile Include="XmlSerDeTest.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Medley.Serialization\Medley.Serialization.csproj">
       <Project>{caf1f5c8-bc4b-48c5-bbb0-c0f985f1ea06}</Project>
       <Name>Medley.Serialization</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Medley.Serialization.Tests.licenseheader" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

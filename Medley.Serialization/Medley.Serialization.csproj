@@ -38,8 +38,13 @@
   <ItemGroup>
     <Compile Include="ISerDe.cs" />
     <Compile Include="ITextSerDe.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="XmlSerDe.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Medley.Serialization.licenseheader" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
