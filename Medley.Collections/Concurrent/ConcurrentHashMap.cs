@@ -492,6 +492,19 @@ namespace ArenaNet.Medley.Collections.Concurrent
         /// <returns></returns>
         public bool Remove(K key)
         {
+            V throwAway;
+
+            return TryRemove(key, out throwAway);
+        }
+
+        /// <summary>
+        /// Tries to remove the given key from the Map and returns its value through an out parameter.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public bool TryRemove(K key, out V value)
+        {
             if (key == null)
             {
                 throw new ArgumentNullException("'key' cannot be null.");
@@ -506,6 +519,7 @@ namespace ArenaNet.Medley.Collections.Concurrent
 
                 if (foundNode == null)
                 {
+                    value = default(V);
                     return false;
                 }
                 else
@@ -535,10 +549,13 @@ namespace ArenaNet.Medley.Collections.Concurrent
                         }
 
                         Interlocked.Decrement(ref count);
+
+                        value = foundNode.kvp.Value;
                         return true;
                     }
                     else
                     {
+                        value = default(V);
                         return false;
                     }
                 }
