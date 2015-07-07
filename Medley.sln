@@ -15,6 +15,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Medley.Pool", "Medley.Pool\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Medley.Pool.Tests", "Medley.Pool.Tests\Medley.Pool.Tests.csproj", "{0788D4FB-5036-4F53-8FAC-56A26F0558EE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Medley.Serialization", "Medley.Serialization\Medley.Serialization.csproj", "{CAF1F5C8-BC4B-48C5-BBB0-C0F985F1EA06}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Medley.Serialization.Tests", "Medley.Serialization.Tests\Medley.Serialization.Tests.csproj", "{5D9B2D79-02A5-41F2-A3F8-1CC27F68090C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +49,14 @@ Global
 		{0788D4FB-5036-4F53-8FAC-56A26F0558EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0788D4FB-5036-4F53-8FAC-56A26F0558EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0788D4FB-5036-4F53-8FAC-56A26F0558EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CAF1F5C8-BC4B-48C5-BBB0-C0F985F1EA06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CAF1F5C8-BC4B-48C5-BBB0-C0F985F1EA06}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CAF1F5C8-BC4B-48C5-BBB0-C0F985F1EA06}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CAF1F5C8-BC4B-48C5-BBB0-C0F985F1EA06}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D9B2D79-02A5-41F2-A3F8-1CC27F68090C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D9B2D79-02A5-41F2-A3F8-1CC27F68090C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D9B2D79-02A5-41F2-A3F8-1CC27F68090C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D9B2D79-02A5-41F2-A3F8-1CC27F68090C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
