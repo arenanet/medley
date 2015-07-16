@@ -143,12 +143,9 @@ namespace ArenaNet.Medley.Pool
         /// Handles pooled object disposal.
         /// </summary>
         /// <param name="pooledObject"></param>
-        internal void OnDisposed(PooledObject<T> pooledObject)
+        internal void OnDisposed()
         {
             Interlocked.Decrement(ref totalPoolSize);
-
-            pooledObject.RefCount.Value = 0;
-            pooledObject.Pool = null;
         }
     }
 }

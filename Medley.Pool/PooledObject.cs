@@ -166,9 +166,12 @@ namespace ArenaNet.Medley.Pool
                 // no managed objects
             }
 
-            Pool.OnDisposed(this);
-
             _state = (int)PooledObjectState.DISPOSED;
+
+            RefCount.Value = 0;
+
+            Pool.OnDisposed();
+            Pool = null;
         }
     }
 }
