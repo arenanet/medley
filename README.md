@@ -17,7 +17,9 @@ Medley contains several libraries which have a multitude of reusable components.
 <br />
 [Medley.Concurrent](https://github.com/arenanet/medley/tree/master/Medley.Concurrent) - Various reusable concurrency constructs.
 <br />
-[Medley.Pool](https://github.com/arenanet/medley/tree/master/Medley.Pool) - Generic pool implementation.
+[Medley.Pool](https://github.com/arenanet/medley/tree/master/Medley.Pool) - Generic object pool implementation.
+<br />
+[Medley.Serialization](https://github.com/arenanet/medley/tree/master/Medley.Serialization) - Various serialization implementations.
 
 ## Bugs and Feedback
 
