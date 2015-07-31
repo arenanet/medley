@@ -2,7 +2,7 @@
 =====
 [![Build status](https://ci.appveyor.com/api/projects/status/cvl40gehv0t334rs?svg=true)](https://ci.appveyor.com/project/elvirb/medley)
 [![License](https://img.shields.io/github/license/arenanet/medley.svg)](http://www.apache.org/licenses/LICENSE-2.0)
-[![Stories in Ready](https://badge.waffle.io/arenanet/medley.png?label=ready&title=Ready)](http://waffle.io/arenanet/medley)
+[![Stories in Ready](https://img.shields.io/github/issues/arenanet/medley.svg?label=tasks)](http://waffle.io/arenanet/medley)
 
 An assortment of various reusable C# components. 
 
