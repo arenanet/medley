@@ -43,55 +43,22 @@ namespace ArenaNet.Medley.Pool
         /// <summary>
         /// The value of this pooled object.
         /// </summary>
-        public T Value { get; internal set; }
-
-        /// <summary>
-        /// External refcount setter.
-        /// </summary>
-        public class RefCountValue
+        internal T _value;
+        public T Value
         {
-            private int value = 0;
-            public int Value
+            set
             {
-                get
-                {
-                    lock (this)
-                    {
-                        return value;
-                    }
-                }
-                internal set
-                {
-                    lock (this)
-                    {
-                        this.value = value;
-                    }
-                }
+                _value = value;
             }
-
-            public int Increment()
+            get
             {
-                lock (this)
+                if (State != PooledObjectState.USED)
                 {
-                    value++;
-                    return value;
+                    throw new InvalidOperationException("This pooled object is not currently used. Its state is: " + State);
                 }
-            }
 
-            public int Decrement()
-            {
-                lock (this)
-                {
-                    value--;
-                    return value;
-                }
+                return _value;
             }
-        }
-
-        public RefCountValue RefCount
-        {
-            get;
-            internal set;
         }
 
         /// <summary>
@@ -119,7 +86,6 @@ namespace ArenaNet.Medley.Pool
         {
             this.Pool = pool;
             this.Value = value;
-            this.RefCount = new RefCountValue();
         }
 
         /// <summary>
@@ -132,6 +98,11 @@ namespace ArenaNet.Medley.Pool
                 throw new InvalidOperationException("This pooled object is not attached to a pool - it may have been evicted.");
             }
 
+            if (State != PooledObjectState.USED)
+            {
+                throw new InvalidOperationException("This pooled object is not currently used. Its state is: " + State);
+            }
+
             Pool.Return(this);
         }
 
@@ -140,7 +111,7 @@ namespace ArenaNet.Medley.Pool
         /// </summary>
         ~PooledObject()
         {
-            Dispose(false);
+            DisposeInternal();
         }
 
         /// <summary>
@@ -148,7 +119,7 @@ namespace ArenaNet.Medley.Pool
         /// </summary>
         public void Dispose()
         {
-            Dispose(true);
+            DisposeInternal();
             GC.SuppressFinalize(this);
         }
 
@@ -156,19 +127,12 @@ namespace ArenaNet.Medley.Pool
         /// Protected implementation of Dispose pattern.
         /// </summary>
         /// <param name="disposing"></param>
-        protected virtual void Dispose(bool disposing)
+        protected virtual void DisposeInternal()
         {
             if (_state == (int)PooledObjectState.DISPOSED)
                 return;
 
-            if (disposing)
-            {
-                // no managed objects
-            }
-
             _state = (int)PooledObjectState.DISPOSED;
-
-            RefCount.Value = 0;
 
             Pool.OnDisposed();
             Pool = null;

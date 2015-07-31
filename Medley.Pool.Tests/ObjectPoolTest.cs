@@ -13,6 +13,7 @@
  */
 using System;
 using System.Threading;
+using System.Collections.Generic;
 using System.Collections.Concurrent;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -160,21 +161,55 @@ namespace ArenaNet.Medley.Pool
         {
             ObjectPool<string> pool = new ObjectPool<string>(() => { return "hello"; });
 
+            for (int i = 0; i < 100; i++)
             {
-                PooledObject<string> pooledObject = pool.Borrow();
+                for (int j = 0; j < 10; j++)
+                {
+                    PooledObject<string> pooledObject = pool.Borrow();
 
-                Assert.AreEqual("hello", pooledObject.Value);
+                    Assert.AreEqual("hello", pooledObject.Value);
+                    Assert.AreEqual(0, pool.ObjectsInPool);
+                    Assert.AreEqual(j + 1, pool.TotalNumberOfObjects);
+
+                    pooledObject = null;
+                }
+
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+
                 Assert.AreEqual(0, pool.ObjectsInPool);
-                Assert.AreEqual(1, pool.TotalNumberOfObjects);
-
-                pooledObject = null;
+                Assert.AreEqual(0, pool.TotalNumberOfObjects);
             }
+        }
 
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
+        [TestMethod]
+        public void TestManuallyDisposedPooledObject()
+        {
+            ObjectPool<string> pool = new ObjectPool<string>(() => { return "hello"; });
 
-            Assert.AreEqual(0, pool.ObjectsInPool);
-            Assert.AreEqual(0, pool.TotalNumberOfObjects);
+            for (int i = 0; i < 100; i++)
+            {
+                List<PooledObject<string>> objects = new List<PooledObject<string>>();
+
+                for (int j = 0; j < 10; j++)
+                {
+                    PooledObject<string> pooledObject = pool.Borrow();
+
+                    Assert.AreEqual("hello", pooledObject.Value);
+                    Assert.AreEqual(0, pool.ObjectsInPool);
+                    Assert.AreEqual(j + 1, pool.TotalNumberOfObjects);
+
+                    objects.Add(pooledObject);
+                }
+
+                for (int j = 0; j < objects.Count; j++)
+                {
+                    objects[j].Dispose();
+                }
+
+                Assert.AreEqual(0, pool.ObjectsInPool);
+                Assert.AreEqual(0, pool.TotalNumberOfObjects);
+            }
         }
 
         [TestMethod]
@@ -220,7 +255,9 @@ namespace ArenaNet.Medley.Pool
         [TestMethod]
         public void TestBorrowAndPooledObjectReturn()
         {
-            ObjectPool<string> pool = new ObjectPool<string>(() => { return "hello"; });
+            int counter = 0;
+
+            ObjectPool<string> pool = new ObjectPool<string>(() => { return "hello" + (++counter); });
             Assert.AreEqual(0, pool.ObjectsInPool);
             Assert.AreEqual(0, pool.TotalNumberOfObjects);
 
@@ -228,13 +265,18 @@ namespace ArenaNet.Medley.Pool
             PooledObject<string> pooledObj2 = pool.Borrow();
 
             Assert.AreEqual(pool, pooledObj1.Pool);
-            Assert.AreEqual("hello", pooledObj1.Value);
+            Assert.AreEqual("hello1", pooledObj1.Value);
             Assert.AreEqual(pool, pooledObj2.Pool);
-            Assert.AreEqual("hello", pooledObj2.Value);
+            Assert.AreEqual("hello2", pooledObj2.Value);
 
             pooledObj1.Return();
 
             Assert.AreEqual(1, pool.ObjectsInPool);
+            Assert.AreEqual(2, pool.TotalNumberOfObjects);
+
+            pooledObj2.Return();
+
+            Assert.AreEqual(2, pool.ObjectsInPool);
             Assert.AreEqual(2, pool.TotalNumberOfObjects);
         }
 

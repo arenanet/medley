@@ -91,7 +91,6 @@ namespace ArenaNet.Medley.Pool
             }
 
             pooledObject._state = (int)PooledObjectState.USED;
-            pooledObject.RefCount.Value = 0;
 
             return pooledObject;
         }
@@ -112,7 +111,7 @@ namespace ArenaNet.Medley.Pool
                 throw new ArgumentException("PooledObject does not belong to this pool.");
             }
 
-            if (Interlocked.CompareExchange(ref pooledObject._state, (int)PooledObjectState.NONE, (int)PooledObjectState.USED) == (int)PooledObjectState.USED)
+            if (Interlocked.CompareExchange(ref pooledObject._state, (byte)PooledObjectState.NONE, (byte)PooledObjectState.USED) == (byte)PooledObjectState.USED)
             {
                 int currentPercentile = (int)(((float)(availableObjects + 1) / (float)totalPoolSize) * 100f);
 
